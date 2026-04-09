@@ -1,0 +1,43 @@
+# ── Dockerfile.optimizado — Alpine + capas optimizadas ───────
+FROM python:3.11-slim
+
+LABEL maintainer="tu-email@ejemplo.com"
+LABEL description="Consulta ONPE Optimizado — Lab 04"
+
+# Combinar instalación en una sola capa RUN (reduce capas y tamaño)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       chromium chromium-driver \
+       wget curl gnupg ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR /app
+
+# Copiar dependencias primero para aprovechar caché de Docker
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip cache purge
+
+# Copiar código y datos
+COPY app.py dnis.xlsx ./
+
+# Usuario no-root para seguridad
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
+    && chown -R appuser:appgroup /app
+USER appuser
+
+# Variables de entorno
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+ENV EXCEL_PATH=/app/dnis.xlsx
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000')" || exit 1
+
+CMD ["python", "app.py"]

@@ -1,0 +1,50 @@
+# ── Dockerfile.multistage — Multi-Stage Build ────────────────
+#
+# Etapa 1: Builder — instala dependencias Python
+# Etapa 2: Runtime — imagen final mínima sin herramientas de build
+
+# ── ETAPA 1: Builder ─────────────────────────────────────────
+FROM python:3.11-slim AS builder
+
+WORKDIR /install
+
+COPY requirements.txt .
+
+# Instalar dependencias en directorio separado (fácil de copiar)
+RUN pip install --no-cache-dir --prefix=/install/deps -r requirements.txt
+
+# ── ETAPA 2: Runtime (imagen final) ──────────────────────────
+FROM python:3.11-slim
+
+LABEL maintainer="tu-email@ejemplo.com"
+LABEL description="Consulta ONPE Multi-Stage — Lab 04"
+
+# Solo lo estrictamente necesario para ejecutar (no compiladores)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       chromium chromium-driver ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copiar solo los paquetes compilados desde el builder
+COPY --from=builder /install/deps /usr/local
+
+# Copiar código y datos
+COPY app.py dnis.xlsx ./
+
+# Usuario no-root
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser \
+    && chown -R appuser:appgroup /app
+USER appuser
+
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+ENV EXCEL_PATH=/app/dnis.xlsx
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
