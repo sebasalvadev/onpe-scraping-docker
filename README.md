@@ -139,20 +139,6 @@ El portal de ONPE muestra un banner con el texto **"ERES PRESIDENTE"**, **"ERES 
 
 ---
 
-## 📝 Conclusiones
-
-1. **Docker permite reproducibilidad total:** Al contenerizar la aplicación junto con Chromium y ChromeDriver, cualquier persona puede ejecutar el sistema en cualquier máquina sin instalar dependencias manualmente. El entorno es siempre idéntico.
-
-2. **Selenium es efectivo para scraping de portales con JavaScript:** El portal de ONPE carga sus datos dinámicamente con JavaScript, lo que hace imposible usar simples peticiones HTTP. Selenium con Chromium headless resuelve esto al comportarse como un navegador real.
-
-3. **La escritura carácter por carácter es clave para evitar detección de bots:** El portal de ONPE rechaza entradas que se escriben instantáneamente (como hace `send_keys` por defecto). Escribir con pequeñas pausas entre caracteres simula comportamiento humano y evita el "Error interno del servidor".
-
-4. **Las imágenes multistage reducen el tamaño en producción:** Separar la etapa de instalación de la etapa de ejecución permite crear imágenes finales más pequeñas y seguras, sin herramientas de compilación innecesarias en producción.
-
-5. **El volumen de Docker permite persistencia de datos:** Al montar el archivo `dnis.xlsx` como volumen (`-v`), los resultados escritos por el contenedor quedan disponibles directamente en la máquina host sin necesidad de copiar archivos manualmente.
-
----
-
 ## 🔗 URL del Repositorio
 
 ```
