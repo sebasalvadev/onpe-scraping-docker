@@ -1,11 +1,11 @@
-# 🗳️ Caso 2 — Consulta Miembro de Mesa ONPE
-**Laboratorio 04 · Contenedores Docker · Desarrollo de Soluciones en la Nube**
+# Consulta Miembro de Mesa ONPE
+**Extracción automatizada de datos y contenedorización con Docker**
 
 Sistema automatizado que consulta el portal oficial de la ONPE para determinar si una lista de ciudadanos (identificados por DNI) son miembros de mesa en las Elecciones Generales 2026. Los resultados se muestran en una interfaz web y se exportan automáticamente a un archivo Excel.
 
 ---
 
-## 📋 Descripción del Caso
+## Descripción
 
 El sistema:
 1. Lee una lista de DNIs desde el archivo `dnis.xlsx`
@@ -16,10 +16,10 @@ El sistema:
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
-sem04/
+onpe-scraping-docker/
 ├── app.py                   # Aplicación principal Flask + Selenium
 ├── dnis.xlsx                # Lista de DNIs a consultar
 ├── requirements.txt         # Dependencias Python
@@ -31,7 +31,7 @@ sem04/
 
 ---
 
-## ⚙️ Requisitos Previos
+## Requisitos Previos
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y corriendo
 - Conexión a internet (para acceder al portal de ONPE)
@@ -39,12 +39,12 @@ sem04/
 
 ---
 
-## 🚀 Pasos de Instalación y Ejecución
+## Pasos de Instalación y Ejecución
 
 ### Paso 1 — Clonar el repositorio
 
 ```bash
-git clone https://github.com/TU_USUARIO/sem04.git
+git clone https://github.com/sebasalvadev/onpe-scraping-docker.git
 cd sem04
 ```
 
@@ -84,7 +84,7 @@ Los resultados aparecen en la tabla de la interfaz web y quedan guardados autom�
 
 ---
 
-## 🐳 Variantes de Dockerfile
+## Variantes de Dockerfile
 
 ### Dockerfile (base)
 Imagen estándar basada en `python:3.11-slim`. Instala Chromium, ChromeDriver y todas las dependencias necesarias para ejecutar Selenium en modo headless dentro del contenedor.
@@ -109,7 +109,7 @@ docker build -f Dockerfile.multistage -t onpe-app:multistage .
 
 ---
 
-## 🛑 Detener y eliminar el contenedor
+## Detener y eliminar el contenedor
 
 ```bash
 docker stop onpe-v1 && docker rm onpe-v1
@@ -117,7 +117,7 @@ docker stop onpe-v1 && docker rm onpe-v1
 
 ---
 
-## 📊 Campos extraídos por el sistema
+## Campos extraídos por el sistema
 
 | Campo | Descripción |
 |---|---|
@@ -133,18 +133,17 @@ docker stop onpe-v1 && docker rm onpe-v1
 
 ---
 
-## 🔍 ¿Cómo detecta si es miembro de mesa?
+## ¿Cómo detecta si es miembro de mesa?
 
 El portal de ONPE muestra un banner con el texto **"ERES PRESIDENTE"**, **"ERES SECRETARIO"**, **"ERES TERCER MIEMBRO"** o **"ERES SUPLENTE"** únicamente para quienes han sido designados. Si ese banner no aparece, el ciudadano no es miembro de mesa. El sistema detecta exactamente ese texto para determinar el resultado.
 
 ---
 
-## 🔗 URL del Repositorio
+## URL del Repositorio
 
 ```
-https://github.com/sebastianalva24AC/sem04.git
+https://github.com/sebasalvadev/onpe-scraping-docker.git
 ```
 
 ---
 
-*Laboratorio 04 — Desarrollo de Soluciones en la Nube · 2026*
